@@ -1,5 +1,7 @@
 install.packages("ggplot2")
 install.packages("treemap")
+install.packages("hrbrthemes")
+library(hrbrthemes)
 library(treemap)
 library(ggplot2)
 library(dplyr)
@@ -149,3 +151,31 @@ p <- ggplot(imdb_3, aes(x=as.factor(id), y=Movies, fill=Role)) +       # Note th
 p
 
 # Plot 5 ####
+imdb_4 <- imdb %>%
+  select(Runtime, IMDB_Rating, Meta_score, No_of_Votes)
+#imdb4_year_rating <- imdb_4 %>% group_by(Runtime) %>% summarise(me = mean(IMDB_Rating))
+imdb_4 %>% 
+  group_by(Runtime) %>% summarise(Avg_IMDB_Rating = mean(IMDB_Rating)) %>%
+    ggplot(aes(x = Runtime, y = Avg_IMDB_Rating)) + 
+    geom_bar(stat = "identity")
+
+#png(filename="C:/Users/pkopy/OneDrive/Pulpit/WIZ_plot5_2.png", width=1980, height=1080)
+
+imdb_4 %>% 
+  group_by(Runtime) %>% summarise(Avg_IMDB_Rating = mean(IMDB_Rating)) %>% arrange(Avg_IMDB_Rating) %>%
+    ggplot( aes(x=Runtime, y=Avg_IMDB_Rating) ) +
+      geom_segment( aes(x=Runtime ,xend=Runtime, y=0, yend=Avg_IMDB_Rating), color="grey") +
+      geom_point(size=3, color="#69b3a2") +
+      #coord_flip() +
+      theme_ipsum() +
+      theme(
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        panel.grid.major.x = element_blank(),
+        panel.border = element_blank(),
+        axis.ticks.x = element_blank(),
+        legend.position="none",
+      ) +
+      xlab("Runtime") +
+      ylab("Average IMDB Rating")
+
+#dev.off()
